@@ -4,28 +4,36 @@
   <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-alpha1/jquery.min.js'></script>
   <script src='https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js'></script>
   <script>
-
     function onSuccess(json) {
       console.log(json);
       window.shots = json;
-
-      most_popular = _(shots).sortBy(function(s) {
+      sort_fn = function(s) {
           return -s["likes_count"];
-      });
-
-      top_10 = _(most_popular).first(10);
-
+      }
+      top_10 = _.chain(shots)
+                .sortBy(sort_fn)
+                .first(10)
+                .value();
       _(top_10).each(function(shot){
         $("<img src='" + shot["image_url"] + "'>").appendTo("#images");
        });
+      // _.compose example
+      //customSort = function(str) {
+     //   return function(collection) {
+    //      return _(collection).sortBy(function(s) { return -s[str] });
+    //    }
+    //  }
+    //  getTop = function(n) {
+    //    return function(collection) {
+    //      return _(collection).first(n) }
+    //  }
+    //  top_10 = _.compose(getTop(10), customSort("likes_count"));
+    // _(top_10(shots)).each(function(shot){
     }
-
     $(function() {
       promise = $.getJSON('http://localhost:8000/custom_dribbble.json', onSuccess)
-
       promise.fail(function(e) { console.log('failed!'); console.log(e) });
      });
-
   </script>
 </head>
 <body>
